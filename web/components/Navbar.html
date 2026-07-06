@@ -1,0 +1,39 @@
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <a href="#" @click.prevent="navigate('/')" class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-purple-600 float-animation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/>
+                    </svg>
+                    <span class="text-xl font-bold text-gray-900">SVGStat</span>
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1 mr-4">
+                    <button 
+                        @click="lang = 'en'"
+                        :class="['lang-btn px-3 py-1 rounded-full text-sm font-medium', lang === 'en' ? 'active' : 'text-gray-600']"
+                    >EN</button>
+                    <button 
+                        @click="lang = 'zh'"
+                        :class="['lang-btn px-3 py-1 rounded-full text-sm font-medium', lang === 'zh' ? 'active' : 'text-gray-600']"
+                    >中文</button>
+                </div>
+                <template x-if="user">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-600" x-text="user.name"></span>
+                        <a href="#" @click.prevent="navigate('/dashboard')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors" x-text="t('dashboard')"></a>
+                        <button @click="logout()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" x-text="t('logout')"></button>
+                    </div>
+                </template>
+                <template x-if="!user">
+                    <div class="flex items-center space-x-4">
+                        <a href="#" @click.prevent="navigate('/login')" class="text-gray-600 hover:text-gray-900" x-text="t('login')"></a>
+                        <a href="#" @click.prevent="navigate('/register')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors" x-text="t('getStarted')"></a>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</nav>

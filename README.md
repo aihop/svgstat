@@ -364,9 +364,13 @@ Coming Soon.
 * AGENT.md
 * ARCHITECTURE.md
 * API.md
+* CONTRACTS.md
 * INTEGRATION.md
 * CONTRIBUTING.md
 * DATABASE.md
+* SCHEMA.md
+* MIGRATIONS.md
+* SQL_DRAFTS.md
 * REDIS.md
 * WORKER.md
 * RENDERER.md

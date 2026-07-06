@@ -1,0 +1,74 @@
+<template x-if="currentPage === 'register'">
+    <div class="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 float-animation">
+                    <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2" x-text="t('createAccountTitle')"></h2>
+                <p class="text-gray-600" x-text="t('startTracking')"></p>
+            </div>
+            <template x-if="registerError">
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p class="text-red-600 text-sm" x-text="registerError"></p>
+                </div>
+            </template>
+            <template x-if="registerSuccess">
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p class="text-green-600 text-sm" x-text="registerSuccess"></p>
+                </div>
+            </template>
+            <form @submit.prevent="register()" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2" x-text="t('name')"></label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        x-model="registerForm.name"
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        :placeholder="t('namePlaceholder')"
+                    >
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2" x-text="t('email')"></label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        x-model="registerForm.email"
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        :placeholder="t('emailPlaceholder')"
+                    >
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2" x-text="t('password')"></label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        x-model="registerForm.password"
+                        required
+                        minlength="6"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        :placeholder="t('passwordPlaceholder')"
+                    >
+                    <p class="mt-1 text-xs text-gray-500" x-text="t('passwordHint')"></p>
+                </div>
+                <button 
+                    type="submit" 
+                    :disabled="registerLoading"
+                    class="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    x-text="registerLoading ? t('creating') : t('createBtn')"
+                ></button>
+            </form>
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    <span x-text="t('haveAccountPrompt')"></span>
+                    <a href="#" @click.prevent="navigate('/login')" class="text-purple-600 hover:text-purple-700 font-medium" x-text="t('login')"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,101 @@
+[x-cloak] {
+    display: none !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+@keyframes breathe {
+    0%, 100% {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(118, 75, 162, 0.5); }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: breathe 8s ease-in-out infinite;
+}
+
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+.glow-card:hover {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.lang-btn {
+    transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.lang-btn.active {
+    background-color: #667eea;
+    color: white;
+}
+
+input, textarea {
+    box-sizing: border-box;
+}
+
+.page-transition {
+    animation: fade-in-up 0.4s ease-out forwards;
+}
+
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}

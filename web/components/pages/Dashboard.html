@@ -1,0 +1,73 @@
+<template x-if="currentPage === 'dashboard'">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8 fade-in-up" style="animation-delay: 0.1s;">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900" x-text="t('yourProjects')"></h1>
+                <p class="text-gray-600 mt-1" x-text="t('manageProjects')"></p>
+            </div>
+            <button @click="showCreateModal = true" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span x-text="t('newProject')"></span>
+            </button>
+        </div>
+
+        <template x-if="loading">
+            <div class="text-center py-12 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="animate-spin w-12 h-12 border-4 border-purple-200 border-purple-600 rounded-full mx-auto mb-4"></div>
+                <p class="text-gray-600" x-text="t('loading')"></p>
+            </div>
+        </template>
+
+        <template x-if="!loading && projects.length > 0">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up" style="animation-delay: 0.2s;">
+                <template x-for="project in projects" :key="project.id">
+                    <div class="bg-white rounded-xl shadow-sm p-6 card-hover glow-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900" x-text="project.name"></h3>
+                                <p class="text-sm text-gray-500" x-text="project.slug"></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button @click="deleteProject(project.id)" class="p-2 rounded-lg border border-transparent bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2" x-text="project.description || (lang === 'zh' ? '暂无描述' : 'No description')"></p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500" x-text="t('counterSvg')"></span>
+                                <img class="h-5" :src="`/svg/${project.slug}/counter/visits.svg`">
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-500" x-text="t('badgeSvg')"></span>
+                                <img class="h-5" :src="`/svg/${project.slug}/badge/downloads.svg`">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
+                            <button @click.prevent="viewProjectStats(project)" class="px-4 py-2 rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 hover:border-purple-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-200 transition-colors" x-text="t('viewStats')"></button>
+                            <button @click.prevent="openCodeModal(project)" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors" x-text="t('getCode')"></button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template x-if="!loading && projects.length === 0">
+            <div class="text-center py-16 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 float-animation">
+                    <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2" x-text="t('noProjects')"></h3>
+                <p class="text-gray-600 mb-6" x-text="t('createFirstProject')"></p>
+                <button @click="showCreateModal = true" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors" x-text="t('createProject')"></button>
+            </div>
+        </template>
+    </div>
+</template>

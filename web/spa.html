@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVGStat - Beautiful SVG Counters & Badges</title>
+    <meta name="keywords" content="SVGStat pricing, SVG counter pricing, SVG badge pricing, free SVG counter, affordable SVG badges, GitHub SVG counter, website badge generator, SVG analytics pricing">
+    <meta name="description" content="Explore SVGStat pricing for beautiful SVG counters and badges. Launch free, compare affordable plans, and create trackable SVG badges for GitHub, docs, dashboards, and websites.">
+    
+    <script>
+        (function() {
+            const savedLang = localStorage.getItem('svgstat-lang');
+            if (savedLang) {
+                document.documentElement.lang = savedLang;
+            }
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div id="app" x-cloak x-data="spaApp()" x-init="init()">
+        <div id="navbar-container"></div>
+        <div class="page-transition" id="page-container"></div>
+        <div id="modals-container"></div>
+    </div>
+
+    <script src="/static/js/translations.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

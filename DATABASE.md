@@ -7,6 +7,10 @@
 > PostgreSQL is used as the durable store inside SVGStat.
 >
 > It is **not** responsible for real-time analytics.
+>
+> For the first concrete table draft, see `SCHEMA.md`.
+>
+> For migration policy and DDL drafts, see `MIGRATIONS.md` and `SQL_DRAFTS.md`.
 
 ---
 
@@ -255,7 +259,7 @@ Store configuration as JSONB when appropriate.
 
 ---
 
-# 11. control_plane_shadow_state
+# 11. Control-Plane Derived State
 
 Purpose:
 
@@ -273,6 +277,7 @@ Rules:
 * This state is derived.
 * Shoply remains the source of truth.
 * The schema should remain narrow and runtime-oriented.
+* In the V1 schema draft, this concern is materialized primarily through `project_limits` and `project_sync_events`.
 
 ---
 
@@ -349,8 +354,6 @@ All schema changes must be versioned.
 Example:
 
 ```text
-000001_create_users.sql
-
 000002_create_projects.sql
 
 000003_create_api_keys.sql
@@ -359,6 +362,8 @@ Example:
 Never edit historical migrations.
 
 Create new migrations instead.
+
+For migration sequencing and change discipline, see `MIGRATIONS.md`.
 
 ---
 
@@ -400,8 +405,6 @@ Tables:
 plural
 
 ```text
-users
-
 projects
 
 daily_statistics
@@ -423,8 +426,6 @@ Foreign Keys:
 
 ```text
 project_id
-
-user_id
 ```
 
 ---

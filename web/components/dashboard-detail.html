@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - SVGStat</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            text-decoration: none;
+        }
+        @keyframes breathe {
+            0%, 100% {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            50% {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: breathe 8s ease-in-out infinite;
+        }
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        .fade-in-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+        }
+        .lang-btn {
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        .lang-btn.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div x-data="dashboardDetail()" x-init="init()">
+        <nav class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center space-x-4">
+                        <a href="/dashboard" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            <span x-text="t('back')">Back</span>
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-1">
+                            <button 
+                                @click="lang = 'en'"
+                                :class="['lang-btn px-3 py-1 rounded-full text-sm font-medium', lang === 'en' ? 'active' : 'text-gray-600']"
+                            >EN</button>
+                            <button 
+                                @click="lang = 'zh'"
+                                :class="['lang-btn px-3 py-1 rounded-full text-sm font-medium', lang === 'zh' ? 'active' : 'text-gray-600']"
+                            >中文</button>
+                        </div>
+                        <span class="text-gray-600" x-text="user?.name"></span>
+                        <button @click="logout()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" x-text="t('logout')">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <template x-if="loading">
+                <div class="text-center py-12">
+                    <div class="animate-spin w-12 h-12 border-4 border-purple-200 border-purple-600 rounded-full mx-auto mb-4"></div>
+                    <p class="text-gray-600" x-text="t('loading')">Loading...</p>
+                </div>
+            </template>
+
+            <template x-if="!loading && project">
+                <div class="fade-in-up">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900" x-text="project.name"></h1>
+                        <p class="text-gray-600 mt-2" x-text="project.description || t('noDescription')"></p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('counterSvg')">Counter SVG</h3>
+                            <div class="flex items-center space-x-2 mb-4">
+                                <img :src="`/svg/${project.slug}/counter/visits.svg`" class="h-8">
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <code class="text-sm text-gray-600 break-all" x-text="`/svg/${project.slug}/counter/visits.svg`"></code>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('badgeSvg')">Badge SVG</h3>
+                            <div class="flex items-center space-x-2 mb-4">
+                                <img :src="`/svg/${project.slug}/badge/downloads.svg`" class="h-5">
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <code class="text-sm text-gray-600 break-all" x-text="`/svg/${project.slug}/badge/downloads.svg`"></code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 stat-card">
+                        <h3 class="font-semibold text-gray-900 mb-4" x-text="t('markdownExamples')">Markdown Examples</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                                <code class="text-sm text-gray-600 break-all" x-text="`![Visits](/svg/${project.slug}/counter/visits.svg)`"></code>
+                                <button @click="copyText(`![Visits](/svg/${project.slug}/counter/visits.svg)`)" class="px-3 py-1 text-purple-600 hover:text-purple-800" x-text="t('copy')">Copy</button>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                                <code class="text-sm text-gray-600 break-all" x-text="`![Downloads](/svg/${project.slug}/badge/downloads.svg)`"></code>
+                                <button @click="copyText(`![Downloads](/svg/${project.slug}/badge/downloads.svg)`)" class="px-3 py-1 text-purple-600 hover:text-purple-800" x-text="t('copy')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 stat-card">
+                        <h3 class="font-semibold text-gray-900 mb-4" x-text="t('todayOverview')">Today's Overview</h3>
+                        <template x-if="loadingStats">
+                            <div class="text-center py-6">
+                                <div class="animate-spin w-6 h-6 border-2 border-purple-200 border-purple-600 rounded-full mx-auto"></div>
+                            </div>
+                        </template>
+                        <template x-if="!loadingStats && stats">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+                                    <div class="text-3xl font-bold text-purple-600" x-text="stats.pv || 0"></div>
+                                    <div class="text-sm text-gray-600" x-text="t('pv')">PV (Page Views)</div>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
+                                    <div class="text-3xl font-bold text-blue-600" x-text="stats.uv || 0"></div>
+                                    <div class="text-sm text-gray-600" x-text="t('uv')">UV (Unique Visitors)</div>
+                                </div>
+                                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
+                                    <div class="text-3xl font-bold text-green-600" x-text="stats.requests || 0"></div>
+                                    <div class="text-sm text-gray-600" x-text="t('totalRequests')">Total Requests</div>
+                                </div>
+                                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4">
+                                    <div class="text-3xl font-bold text-orange-600" x-text="stats.bots || 0"></div>
+                                    <div class="text-sm text-gray-600" x-text="t('bots')">Bots</div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topCountries')">Top Countries</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[country, count] in Object.entries(stats.countries || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)" :key="country">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700" x-text="country"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-purple-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.countries || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.countries || Object.keys(stats.countries).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topPaths')">Top Paths</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[path, count] in Object.entries(stats.paths || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)" :key="path">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700 truncate max-w-48" x-text="path"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-blue-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.paths || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.paths || Object.keys(stats.paths).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topDevices')">Top Devices</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[device, count] in Object.entries(stats.devices || {}).sort((a, b) => b[1] - a[1])" :key="device">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700" x-text="device"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.devices || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.devices || Object.keys(stats.devices).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topBrowsers')">Top Browsers</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[browser, count] in Object.entries(stats.browsers || {}).sort((a, b) => b[1] - a[1])" :key="browser">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700" x-text="browser"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-orange-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.browsers || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.browsers || Object.keys(stats.browsers).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topReferrers')">Top Referrers</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[referrer, count] in Object.entries(stats.referrers || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)" :key="referrer">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700 truncate max-w-48" x-text="referrer"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-pink-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.referrers || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.referrers || Object.keys(stats.referrers).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 stat-card">
+                            <h3 class="font-semibold text-gray-900 mb-4" x-text="t('topIPs')">Top IPs</h3>
+                            <template x-if="!loadingStats && stats">
+                                <div class="space-y-3">
+                                    <template x-for="[ip, count] in Object.entries(stats.ips || {}).sort((a, b) => b[1] - a[1]).slice(0, 8)" :key="ip">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-700 font-mono text-sm" x-text="ip"></span>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-32 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-cyan-500 h-2 rounded-full" 
+                                                         :style="`width: ${(count / Math.max(...Object.values(stats.ips || {}))) * 100}%`"></div>
+                                                </div>
+                                                <span class="text-sm text-gray-500" x-text="count"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="(!stats.ips || Object.keys(stats.ips).length === 0)">
+                                        <p class="text-gray-500 text-center py-4" x-text="t('noData')">No data</p>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script>
+        function dashboardDetail() {
+            const translations = {
+                en: {
+                    back: 'Back',
+                    logout: 'Logout',
+                    loading: 'Loading...',
+                    noDescription: 'No description',
+                    counterSvg: 'Counter SVG',
+                    badgeSvg: 'Badge SVG',
+                    markdownExamples: 'Markdown Examples',
+                    copy: 'Copy',
+                    todayOverview: "Today's Overview",
+                    pv: 'PV (Page Views)',
+                    uv: 'UV (Unique Visitors)',
+                    totalRequests: 'Total Requests',
+                    bots: 'Bots',
+                    topCountries: 'Top Countries',
+                    topPaths: 'Top Paths',
+                    topDevices: 'Top Devices',
+                    topBrowsers: 'Top Browsers',
+                    topReferrers: 'Top Referrers',
+                    topIPs: 'Top IPs',
+                    noData: 'No data',
+                    copied: 'Copied to clipboard!'
+                },
+                zh: {
+                    back: '返回',
+                    logout: '退出',
+                    loading: '加载中...',
+                    noDescription: '暂无描述',
+                    counterSvg: '计数器 SVG',
+                    badgeSvg: '徽章 SVG',
+                    markdownExamples: 'Markdown 示例',
+                    copy: '复制',
+                    todayOverview: '今日概览',
+                    pv: 'PV (页面浏览量)',
+                    uv: 'UV (独立访客)',
+                    totalRequests: '总请求数',
+                    bots: '爬虫请求',
+                    topCountries: '热门国家',
+                    topPaths: '热门路径',
+                    topDevices: '热门设备',
+                    topBrowsers: '热门浏览器',
+                    topReferrers: '热门来源',
+                    topIPs: '热门 IP',
+                    noData: '暂无数据',
+                    copied: '已复制到剪贴板！'
+                }
+            };
+
+            return {
+                lang: localStorage.getItem('svgstat-lang') || 'en',
+                user: null,
+                project: null,
+                stats: null,
+                loading: true,
+                loadingStats: false,
+
+                t(key) {
+                    return translations[this.lang]?.[key] || translations.en[key] || key;
+                },
+
+                async init() {
+                    this.$watch('lang', (val) => {
+                        localStorage.setItem('svgstat-lang', val);
+                        document.documentElement.lang = val;
+                    });
+                    document.documentElement.lang = this.lang;
+                    await this.checkAuth();
+                    if (this.user) {
+                        await this.loadProject();
+                        if (this.project) {
+                            await this.loadStats();
+                        }
+                    }
+                },
+
+                async checkAuth() {
+                    try {
+                        const res = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.user = data.data;
+                        } else {
+                            window.location.href = '/login';
+                        }
+                    } catch (e) {
+                        window.location.href = '/login';
+                    }
+                },
+
+                async loadProject() {
+                    const pathParts = window.location.pathname.split('/');
+                    const projectId = pathParts[pathParts.length - 1];
+                    
+                    try {
+                        const res = await fetch(`/api/v1/projects/${projectId}`, { credentials: 'same-origin' });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.project = data.data;
+                        }
+                    } catch (e) {
+                        console.error('Failed to load project', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async loadStats() {
+                    if (!this.project) return;
+                    
+                    this.loadingStats = true;
+                    try {
+                        const res = await fetch(`/api/v1/projects/${this.project.id}/stats`, { credentials: 'same-origin' });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.stats = data.data;
+                        }
+                    } catch (e) {
+                        console.error('Failed to load stats', e);
+                    } finally {
+                        this.loadingStats = false;
+                    }
+                },
+
+                copyText(text) {
+                    navigator.clipboard.writeText(window.location.origin + text).then(() => {
+                        alert(this.t('copied'));
+                    });
+                },
+
+                async logout() {
+                    try {
+                        await fetch('/api/v1/auth/logout', {
+                            method: 'POST',
+                            credentials: 'same-origin'
+                        });
+                        this.user = null;
+                        window.location.href = '/';
+                    } catch (e) {
+                        console.error('Logout failed', e);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
